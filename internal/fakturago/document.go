@@ -1,6 +1,8 @@
 package fakturago
 
 import (
+	"strings"
+
 	"github.com/imdario/mergo"
 	"github.com/johnfercher/maroto/pkg/consts"
 	"github.com/johnfercher/maroto/pkg/pdf"
@@ -25,15 +27,14 @@ func addFonts(pdfMaroto *pdf.PdfMaroto) {
 }
 
 func (d *Document) BaseText(text string, textProps ...props.Text) {
-	d.styledText(text, props.Text{Size: 10, Family: "Lato"}, textProps...)
+	d.styledText(text, props.Text{Size: 10}, textProps...)
 }
 
 func (d *Document) Title(text string, textProps ...props.Text) {
 	d.styledText(text, props.Text{
-		Size:   12,
-		Style:  consts.Bold,
-		Align:  consts.Center,
-		Family: "Lato",
+		Size:  12,
+		Style: consts.Bold,
+		Align: consts.Center,
 	}, textProps...)
 }
 
@@ -50,7 +51,12 @@ func (d *Document) styledText(text string, baseProps props.Text, textProps ...pr
 		IsUTF8Font: true,
 	}
 	textProps = append([]props.Text{defaultProps, baseProps}, textProps...)
-	d.Text(text, combineProps(baseProps, textProps...))
+	prop := combineProps(baseProps, textProps...)
+	lines := strings.Split(text, "\n")
+	for _, line := range lines {
+		prop.Top += 5
+		d.Text(line, prop)
+	}
 }
 
 func combineProps(base props.Text, textProps ...props.Text) props.Text {

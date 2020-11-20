@@ -32,15 +32,11 @@ func (inv *Invoice) addCompaniesInfo() {
 	inv.doc.Row(40, func() {
 		inv.doc.Col(4, func() {
 			inv.doc.SubTitle(strings.Title(t(inv.loc, "BillTo") + ":"))
-			companyInfo := []string{
-				"John Snow",
-				"Tower 1",
-				"12-345 Winterfell",
-				"Westeros",
-			}
-			for i, line := range companyInfo {
-				inv.doc.BaseText(line, props.Text{Top: 5 * float64(i+1)})
-			}
+			companyInfo := `John Snow
+Tower 1
+12-345 Winterfell
+Westeros`
+			inv.doc.BaseText(companyInfo, props.Text{Top: 5})
 		})
 
 		inv.doc.ColSpace(4)
