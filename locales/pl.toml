@@ -1,0 +1,11 @@
+[Invoice]
+other = "faktura"
+
+[Date]
+other = "data"
+
+[InvoiceNumber]
+other = "nr"
+
+[BillTo]
+other = "nabywca"

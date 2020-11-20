@@ -1,0 +1,11 @@
+[Invoice]
+other = "invoice"
+
+[Date]
+other = "date"
+
+[InvoiceNumber]
+other = "invoice number"
+
+[BillTo]
+other = "bill to"
