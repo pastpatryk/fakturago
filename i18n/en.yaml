@@ -1,0 +1,10 @@
+invoice: invoice
+date: date
+invoiceNumber: invoice number
+billTo: bill to
+seller: seller
+vatNumber: vat number
+name: name
+amount: amount
+tax: tax
+total: total

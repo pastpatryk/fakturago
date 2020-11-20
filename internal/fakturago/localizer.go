@@ -5,11 +5,11 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/BurntSushi/toml"
 	"github.com/nicksnyder/go-i18n/v2/i18n"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/text/language"
+	"gopkg.in/yaml.v2"
 )
 
 type Localizer interface {
@@ -37,9 +37,9 @@ func (l *I18nLocalizer) T(key string) string {
 
 func loadLanguageBundle(path string) (*i18n.Bundle, error) {
 	bundle := i18n.NewBundle(language.English)
-	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+	bundle.RegisterUnmarshalFunc("yaml", yaml.Unmarshal)
 
-	err := walkFilesWithExt(path, ".toml", func(path string) error {
+	err := walkFilesWithExt(path, ".yaml", func(path string) error {
 		log.WithFields(log.Fields{"file": path}).Debug("Loading language...")
 		_, err := bundle.LoadMessageFile(path)
 		if err != nil {

@@ -1,0 +1,10 @@
+invoice: faktura
+date: data
+invoiceNumber: nr
+billTo: nabywca
+seller: sprzedawca
+vatNumber: NIP
+name: nazwa
+amount: wartość
+tax: podatek
+total: suma
