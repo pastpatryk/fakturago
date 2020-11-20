@@ -9,5 +9,5 @@ import (
 func main() {
 	log.SetLevel(log.DebugLevel)
 
-	fakturago.GenerateInvoice("./invoice.pdf")
+	fakturago.Generate("./invoice.pdf")
 }

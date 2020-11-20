@@ -12,6 +12,7 @@ require (
 	github.com/sirupsen/logrus v1.7.0
 	golang.org/x/sys v0.0.0-20201119102817-f84b799fce68 // indirect
 	golang.org/x/text v0.3.4
+	gopkg.in/yaml.v2 v2.3.0
 )
 
-replace github.com/johnfercher/maroto => github.com/pastDexter/maroto v0.28.1-0.20201120091517-b440edc06f9a
+replace github.com/johnfercher/maroto => github.com/pastDexter/maroto v0.28.1-0.20201120200400-9e13fdac1d9e

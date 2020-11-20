@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/imdario/mergo"
+	"github.com/johnfercher/maroto/pkg/color"
 	"github.com/johnfercher/maroto/pkg/consts"
 	"github.com/johnfercher/maroto/pkg/pdf"
 	"github.com/johnfercher/maroto/pkg/props"
@@ -43,6 +44,30 @@ func (d *Document) SubTitle(text string, textProps ...props.Text) {
 		Size:  10,
 		Style: consts.Bold,
 	}, textProps...)
+}
+
+func (d *Document) DataTable(headers []string, contents [][]string) {
+	d.TableList(headers, contents, props.TableList{
+		HeaderProp: props.TableListContent{
+			Family:     "Lato",
+			GridSizes:  []uint{8, 4},
+			Size:       12,
+			IsUTF8Font: true,
+		},
+		ContentProp: props.TableListContent{
+			Family:      "Lato",
+			GridSizes:   []uint{8, 4},
+			IsUTF8Font:  true,
+			CellPadding: 2,
+		},
+		LastRowBackground: &color.Color{
+			Red:   200,
+			Green: 200,
+			Blue:  200,
+		},
+		HeaderContentSpace: 3,
+		Line:               true,
+	})
 }
 
 func (d *Document) styledText(text string, baseProps props.Text, textProps ...props.Text) {
