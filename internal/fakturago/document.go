@@ -11,6 +11,7 @@ import (
 	"github.com/jung-kurt/gofpdf"
 )
 
+// Document wraps and extends creation of PDF document
 type Document struct {
 	*pdf.PdfMaroto
 }
@@ -27,10 +28,12 @@ func addFonts(pdfMaroto *pdf.PdfMaroto) {
 	fpdf.AddUTF8Font("Lato", "B", "./assets/fonts/Lato-Bold.ttf")
 }
 
+// BaseText creates default style of text
 func (d *Document) BaseText(text string, textProps ...props.Text) {
 	d.styledText(text, props.Text{Size: 10}, textProps...)
 }
 
+// Title creates big headers
 func (d *Document) Title(text string, textProps ...props.Text) {
 	d.styledText(text, props.Text{
 		Size:  12,
@@ -39,6 +42,7 @@ func (d *Document) Title(text string, textProps ...props.Text) {
 	}, textProps...)
 }
 
+// SubTitle creates smaller headers
 func (d *Document) SubTitle(text string, textProps ...props.Text) {
 	d.styledText(text, props.Text{
 		Size:  10,
@@ -46,6 +50,7 @@ func (d *Document) SubTitle(text string, textProps ...props.Text) {
 	}, textProps...)
 }
 
+// DataTable creates styled table with passed headers and rows
 func (d *Document) DataTable(headers []string, contents [][]string, columnsWidth []uint) {
 	d.TableList(headers, contents, props.TableList{
 		HeaderProp: props.TableListContent{

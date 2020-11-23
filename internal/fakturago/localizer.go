@@ -12,21 +12,25 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// Localizer translates strings in given language
 type Localizer interface {
 	T(key string) string
 	Lang() string
 }
 
+// I18nLocalizer implements Localizer with i18n files support
 type I18nLocalizer struct {
 	i18n *i18n.Localizer
 	lang string
 }
 
+// NewLocalizer creates new Localizer from language bundle
 func NewLocalizer(bundle *i18n.Bundle, lang string) Localizer {
 	loc := i18n.NewLocalizer(bundle, lang)
 	return &I18nLocalizer{loc, lang}
 }
 
+// T returns localized string for given key
 func (l *I18nLocalizer) T(key string) string {
 	value, err := l.i18n.Localize(&i18n.LocalizeConfig{MessageID: key})
 	if err != nil {
@@ -36,6 +40,7 @@ func (l *I18nLocalizer) T(key string) string {
 	return value
 }
 
+// Lang returns currently used languge
 func (l *I18nLocalizer) Lang() string {
 	return l.lang
 }

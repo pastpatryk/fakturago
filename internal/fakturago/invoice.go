@@ -12,6 +12,7 @@ import (
 	"golang.org/x/text/language"
 )
 
+// Invoice holds dependencies need to construct an invoice
 type Invoice struct {
 	doc Document
 	loc Localizer
