@@ -46,17 +46,17 @@ func (d *Document) SubTitle(text string, textProps ...props.Text) {
 	}, textProps...)
 }
 
-func (d *Document) DataTable(headers []string, contents [][]string) {
+func (d *Document) DataTable(headers []string, contents [][]string, columnsWidth []uint) {
 	d.TableList(headers, contents, props.TableList{
 		HeaderProp: props.TableListContent{
 			Family:     "Lato",
-			GridSizes:  []uint{8, 4},
+			GridSizes:  columnsWidth,
 			Size:       12,
 			IsUTF8Font: true,
 		},
 		ContentProp: props.TableListContent{
 			Family:      "Lato",
-			GridSizes:   []uint{8, 4},
+			GridSizes:   columnsWidth,
 			IsUTF8Font:  true,
 			CellPadding: 2,
 		},

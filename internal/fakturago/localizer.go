@@ -14,6 +14,7 @@ import (
 
 type Localizer interface {
 	T(key string) string
+	Lang() string
 }
 
 type I18nLocalizer struct {
@@ -33,6 +34,10 @@ func (l *I18nLocalizer) T(key string) string {
 		return fmt.Sprintf("[missing translation \"%s\"]", key)
 	}
 	return value
+}
+
+func (l *I18nLocalizer) Lang() string {
+	return l.lang
 }
 
 func loadLanguageBundle(path string) (*i18n.Bundle, error) {

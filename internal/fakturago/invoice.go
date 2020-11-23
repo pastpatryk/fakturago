@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"html/template"
 	"strings"
-	"time"
 
 	"github.com/johnfercher/maroto/pkg/consts"
 	"github.com/johnfercher/maroto/pkg/props"
 	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/text/language"
 )
 
@@ -27,8 +27,7 @@ const (
 {{ t "vatNumber" | title }}: {{ .VatNumber }}`
 )
 
-func (inv *Invoice) addHeader() {
-	info := BillingInfo{Date: time.Now(), Number: "01/11/2020"}
+func (inv *Invoice) addHeader(info BillingInfo) {
 	headerText, _ := inv.renderTemplate(headerTmpl, info)
 
 	inv.doc.Row(8, func() {
@@ -45,21 +44,14 @@ func (inv *Invoice) addHeader() {
 	inv.doc.Line(10)
 }
 
-func (inv *Invoice) addCompaniesInfo() {
-	company := Company{
-		Name:      "John Snow Co.",
-		Address:   "South Tower 1",
-		City:      "Winterfell",
-		ZipCode:   "12-345",
-		Country:   "Westeros",
-		VatNumber: "NS 01234567",
-	}
-	companyText, _ := inv.renderTemplate(companyTmpl, company)
+func (inv *Invoice) addCompaniesInfo(info BillingInfo) {
+	billToText, _ := inv.renderTemplate(companyTmpl, info.BillTo)
+	companyText, _ := inv.renderTemplate(companyTmpl, info.Company)
 
 	inv.doc.Row(40, func() {
 		inv.doc.Col(4, func() {
 			inv.doc.SubTitle(strings.Title(inv.loc.T("billTo") + ":"))
-			inv.doc.BaseText(companyText, props.Text{Top: 5})
+			inv.doc.BaseText(billToText, props.Text{Top: 5})
 		})
 
 		inv.doc.ColSpace(4)
@@ -73,17 +65,58 @@ func (inv *Invoice) addCompaniesInfo() {
 	inv.doc.Line(10)
 }
 
-func (inv *Invoice) addItems() {
-	headers := []string{
-		strings.Title(inv.loc.T("name")),
-		strings.Title(inv.loc.T("amount")),
+func (inv *Invoice) addItems(info BillingInfo) {
+	var (
+		headers  []string
+		contents [][]string
+	)
+
+	enabledColumns := []bool{true, !info.NoTax, true}
+
+	columnsWidth := []uint{8, 2, 2}
+	// if info.NoTax {
+	// 	columnsWidth = []uint{10, 2}
+	// }
+
+	for _, header := range []string{"name", "tax", "amount"} {
+		headers = append(headers, strings.Title(inv.loc.T(header)))
 	}
-	contents := [][]string{
-		{"Software development (01.11.2020 - 31.11.2020)", "35 000 PLN"},
-		{"Tech support", "5 000 PLN"},
-		{strings.ToUpper(inv.loc.T("total")), "40 000 PLN"},
+
+	headers = filterRow(headers, enabledColumns)
+
+	lang := inv.loc.Lang()
+	total := 0.0
+	for _, item := range info.Items {
+		total += item.FinalAmount()
+
+		row := []string{
+			item.LocalizedName(lang),
+			item.Tax.String(),
+			info.Currency.Format(item.FinalAmount()),
+		}
+		contents = append(contents, filterRow(row, enabledColumns))
 	}
-	inv.doc.DataTable(headers, contents)
+
+	row := []string{
+		strings.ToUpper(inv.loc.T("total")),
+		"",
+		info.Currency.Format(total),
+	}
+
+	contents = append(contents, filterRow(row, enabledColumns))
+
+	inv.doc.DataTable(headers, contents, columnsWidth)
+}
+
+func filterRow(row []string, filter []bool) []string {
+	result := []string{}
+	for i, enabled := range filter {
+		if enabled {
+			result = append(result, row[i])
+		}
+	}
+	log.Info("Results ", len(result))
+	return result
 }
 
 func (inv *Invoice) renderTemplate(tmplText string, data interface{}) (string, error) {
@@ -107,7 +140,8 @@ func (inv *Invoice) renderTemplate(tmplText string, data interface{}) (string, e
 	return buf.String(), nil
 }
 
-func Generate(path string) error {
+// Generate creates and saves invoice to pdf based on passed BillingInfo
+func Generate(info BillingInfo, path string) error {
 	var err error
 
 	bundle, err := loadLanguageBundle("i18n")
@@ -120,9 +154,9 @@ func Generate(path string) error {
 
 	inv := Invoice{doc, loc}
 
-	inv.addHeader()
-	inv.addCompaniesInfo()
-	inv.addItems()
+	inv.addHeader(info)
+	inv.addCompaniesInfo(info)
+	inv.addItems(info)
 
 	err = inv.doc.OutputFileAndClose(path)
 
