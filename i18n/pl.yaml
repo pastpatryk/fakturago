@@ -8,3 +8,7 @@ name: nazwa
 amount: wartość
 tax: podatek
 total: suma
+payment: płatność
+bankTransfer: przelew bankowy
+accountNumber: numer konta
+dueDate: termin zapłaty

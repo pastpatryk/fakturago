@@ -8,3 +8,7 @@ name: name
 amount: amount
 tax: tax
 total: total
+payment: payment
+bankTransfer: bank transfer
+accountNumber: account number
+dueDate: due date

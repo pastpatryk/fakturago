@@ -8,8 +8,6 @@ import (
 	"github.com/johnfercher/maroto/pkg/consts"
 	"github.com/johnfercher/maroto/pkg/props"
 	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
-	"golang.org/x/text/language"
 )
 
 // Invoice holds dependencies need to construct an invoice
@@ -26,6 +24,9 @@ const (
 {{ .ZipCode }} {{ .City }}
 {{ .Country }}
 {{ t "vatNumber" | title }}: {{ .VatNumber }}`
+	paymentTmpl = `{{ t "bankTransfer" | title }}
+{{ t "accountNumber" | title }}: {{ .AccountNumber }}
+{{ t "dueDate" | title }}: {{ .DueDate.Format "2/01/2006" }}`
 )
 
 func (inv *Invoice) addHeader(info BillingInfo) {
@@ -75,9 +76,9 @@ func (inv *Invoice) addItems(info BillingInfo) {
 	enabledColumns := []bool{true, !info.NoTax, true}
 
 	columnsWidth := []uint{8, 2, 2}
-	// if info.NoTax {
-	// 	columnsWidth = []uint{10, 2}
-	// }
+	if info.NoTax {
+		columnsWidth = []uint{10, 2}
+	}
 
 	for _, header := range []string{"name", "tax", "amount"} {
 		headers = append(headers, strings.Title(inv.loc.T(header)))
@@ -109,6 +110,17 @@ func (inv *Invoice) addItems(info BillingInfo) {
 	inv.doc.DataTable(headers, contents, columnsWidth)
 }
 
+func (inv *Invoice) addPaymentInfo(info BillingInfo) {
+	paymentText, _ := inv.renderTemplate(paymentTmpl, info.Payment)
+
+	inv.doc.Row(20, func() {
+		inv.doc.Col(12, func() {
+			inv.doc.SubTitle(strings.ToUpper(inv.loc.T("payment")))
+			inv.doc.BaseText(paymentText, props.Text{Top: 6})
+		})
+	})
+}
+
 func filterRow(row []string, filter []bool) []string {
 	result := []string{}
 	for i, enabled := range filter {
@@ -116,7 +128,6 @@ func filterRow(row []string, filter []bool) []string {
 			result = append(result, row[i])
 		}
 	}
-	log.Info("Results ", len(result))
 	return result
 }
 
@@ -142,14 +153,14 @@ func (inv *Invoice) renderTemplate(tmplText string, data interface{}) (string, e
 }
 
 // Generate creates and saves invoice to pdf based on passed BillingInfo
-func Generate(info BillingInfo, path string) error {
+func Generate(info BillingInfo, path string, lang string) error {
 	var err error
 
 	bundle, err := loadLanguageBundle("i18n")
 	if err != nil {
 		return err
 	}
-	loc := NewLocalizer(bundle, language.Polish.String())
+	loc := NewLocalizer(bundle, lang)
 
 	doc := newDocument()
 
@@ -158,6 +169,7 @@ func Generate(info BillingInfo, path string) error {
 	inv.addHeader(info)
 	inv.addCompaniesInfo(info)
 	inv.addItems(info)
+	inv.addPaymentInfo(info)
 
 	err = inv.doc.OutputFileAndClose(path)
 

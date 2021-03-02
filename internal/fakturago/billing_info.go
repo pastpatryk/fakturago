@@ -17,6 +17,7 @@ type BillingInfo struct {
 	Currency Currency      `yaml:"currency"`
 	NoTax    bool          `yaml:"no_tax"`
 	Items    []BillingItem `yaml:"items"`
+	Payment  PaymentInfo   `yaml:"payment"`
 }
 
 // Company contains info about single company
@@ -35,6 +36,13 @@ type BillingItem struct {
 	NameLang map[string]string `yaml:"name_lang"`
 	Amount   float64           `yaml:"amount"`
 	Tax      Tax               `yaml:"tax"`
+}
+
+// PaymentInfo contains data about invoice payment
+type PaymentInfo struct {
+	Type          string    `yaml:"type"`
+	AccountNumber string    `yaml:"account_number"`
+	DueDate       time.Time `yaml:"due_date"`
 }
 
 // Tax represents tax value for single item
