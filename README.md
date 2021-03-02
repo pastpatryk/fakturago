@@ -2,7 +2,7 @@
 
 ![Go badge](https://img.shields.io/github/go-mod/go-version/pastDexter/fakturago)
 
-CLI for generating invoices from template.
+CLI for generating invoices from YAML data.
 Written in Go.
 
 #### Features:
