@@ -1,0 +1,32 @@
+name: Example-Invoice
+date: 2021-01-01
+number: 1/01/2021
+company:
+  name: Jan Kowalski
+  address: ul. Dworcowa 12/34
+  city: Warsaw
+  zip_code: 01-234
+  country: Poland
+  vat_number: PL 988765432
+bill_to:
+  name: ACME Co.
+  address: 123 Sesame Street
+  city: New York
+  zip_code: 12345
+  country: United States
+  vat_number: US 123456789
+no_tax: false
+currency: PLN
+items:
+  - name: MacBook Pro 13"
+    amount: 5000
+    tax: 0.23
+  - name_lang:
+      en: Software development services
+      pl: Usługi programistyczne
+    amount: 1000
+    tax: 0.08
+payment:
+  type: "bank_transfer"
+  account_number: "PL 12 345 6789 0000 98765  (BIC/SWIFT: XXXXXX)"
+  due_date: 2021-02-01
